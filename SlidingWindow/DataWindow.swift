@@ -13,16 +13,20 @@ class DataWindow<Element: ElementType> {
     private lazy var cache = WindowCache<Element.IdType, Element>(pagesToRetain: 3)
     
     // MARK: - Data Fetcher
-    typealias DataFetcher = ([Element.IdType]) -> [Element]
+    typealias DataFetcher = ([Element.IdType]) throws -> [Element]
     private let dataFetcher: DataFetcher
     
     // MARK: - Init
-    init(ids: [Element.IdType], windowSize: Int = 20, dataFetcher: @escaping DataFetcher, elementsReadyBlock: ElementsReadyBlock?) {
+    init(ids: [Element.IdType], windowSize: Int = 20, dataFetcher: @escaping DataFetcher, errorHandler: @escaping ErrorHandler) {
         self.ids = ids
         self.windowSize = windowSize
         self.dataFetcher = dataFetcher
-        self.elementsReadyBlock = elementsReadyBlock
+        self.errorHandler = errorHandler
     }
+    
+    // MARK: - Error
+    typealias ErrorHandler = (Error) -> Void
+    let errorHandler: ErrorHandler
     
     // MARK: - Accessors
     subscript(index: Int) -> Element? {
@@ -45,16 +49,12 @@ class DataWindow<Element: ElementType> {
             prefetch(index: index)
         }
         
-        if block {
+        if block && page(forIndex: index) == page {
             queue.sync {}
         }
         return element
     }
-    
-    // MARK: - Delegates
-    typealias ElementsReadyBlock = ([Int]) -> Void
-    private let elementsReadyBlock: ElementsReadyBlock?
-    
+        
     // MARK: - Paging
     private var page = 0
     let ids: [Element.IdType]
@@ -66,6 +66,7 @@ class DataWindow<Element: ElementType> {
     }
     func prefetch(index: Int) {
         guard
+            (0..<ids.count).contains(index),
             !isPrefetching.value,
             cache[ids[index]] == nil
             else { return }
@@ -77,13 +78,16 @@ class DataWindow<Element: ElementType> {
             let startIndex = page * self.windowSize
             let indexRange = startIndex..<min(self.ids.count, startIndex + self.windowSize)
             let ids = Array(self.ids[indexRange])
-            let elements = self.dataFetcher(ids)
             
-            for (index, element) in elements.enumerated() {
-                self[startIndex + index] = element
+            do {
+                let elements = try self.dataFetcher(ids)
+                
+                for (index, element) in elements.enumerated() {
+                    self[startIndex + index] = element
+                }
+            } catch {
+                self.errorHandler(error)
             }
-            
-            self.elementsReadyBlock?(Array(indexRange))
             
             self.isPrefetching.value = false
         }
@@ -151,9 +155,7 @@ fileprivate struct WindowCache<Key: Hashable, Value> {
                 lastReferencePage = page
             } else {
                 dict.value.removeValue(forKey: key)
-            }
-            
-            print("\(dict.value.count) items in cache.")
+            }            
         }
     }
 }

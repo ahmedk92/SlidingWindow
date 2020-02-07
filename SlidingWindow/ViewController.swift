@@ -20,17 +20,11 @@ struct MyData: ElementType {
 class ViewController: UIViewController {
     @IBOutlet private weak var tableView: UITableView!
     
-    private lazy var dataWindow = DataWindow<MyData>(ids: Array(0...10000), windowSize: 30, dataFetcher: { (ids) in
-        Thread.sleep(forTimeInterval: 0.1) // Simulate Heavy Work
-        return ids.map({ MyData(id: $0, string: "\($0) \(randomText(length: Int.random(in: 20...200)))") })
-    }, elementsReadyBlock: { [weak self] (indices) in
-        guard let self = self else { return }
-        
-        DispatchQueue.main.async {
-//            self.tableView.reloadRows(at: indices.map({ IndexPath(row: $0, section: 0) }), with: .automatic)
-//            self.tableView.reloadRows(at: self.tableView.indexPathsForVisibleRows ?? [], with: .automatic)
-            self.tableView.reloadData()
-        }
+    private lazy var dataWindow = DataWindow<MyData>(ids: Array(0...10000), windowSize: 50, dataFetcher: { (ids) in
+        Thread.sleep(forTimeInterval: 1) // Simulate Heavy Work
+        return ids.map({ MyData(id: $0, string: "\($0) \(randomText(length: Int.random(in: 100...1000)))") })
+    }, errorHandler: { error in
+        print(error)
     })
         
     override func viewDidAppear(_ animated: Bool) {
@@ -52,7 +46,12 @@ extension ViewController: UITableViewDataSource, UITableViewDataSourcePrefetchin
     
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths {
-            dataWindow.prefetch(index: indexPath.row)
+            let peek = 10
+            let indicesToPrefetch = [indexPath.row + peek, indexPath.row - peek]
+            for indexToPrefetch in indicesToPrefetch {
+                print("Will prefetch \(indexToPrefetch)")
+                dataWindow.prefetch(index: indexToPrefetch)
+            }
         }
     }
 }
