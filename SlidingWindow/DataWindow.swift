@@ -17,16 +17,20 @@ class DataWindow<Element: ElementType> {
     private let dataFetcher: DataFetcher
     
     // MARK: - Init
-    init(ids: [Element.IdType], windowSize: Int = 20, dataFetcher: @escaping DataFetcher, errorHandler: @escaping ErrorHandler) {
+    init(ids: [Element.IdType], windowSize: Int = 20, dataFetcher: @escaping DataFetcher, errorHandler: @escaping ErrorHandler, onElementsReadyHandler: OnElementsReadyHandler?) {
         self.ids = ids
         self.windowSize = windowSize
         self.dataFetcher = dataFetcher
         self.errorHandler = errorHandler
+        self.onElementsReadyHandler = onElementsReadyHandler
     }
+    
+    typealias OnElementsReadyHandler = () -> Void
+    private let onElementsReadyHandler: OnElementsReadyHandler?
     
     // MARK: - Error
     typealias ErrorHandler = (Error) -> Void
-    let errorHandler: ErrorHandler
+    private let errorHandler: ErrorHandler
     
     // MARK: - Accessors
     subscript(index: Int) -> Element? {
@@ -85,6 +89,9 @@ class DataWindow<Element: ElementType> {
                 for (index, element) in elements.enumerated() {
                     self[startIndex + index] = element
                 }
+                
+                self.onElementsReadyHandler?()
+                
             } catch {
                 self.errorHandler(error)
             }

@@ -20,12 +20,31 @@ struct MyData: ElementType {
 class ViewController: UIViewController {
     @IBOutlet private weak var tableView: UITableView!
     
-    private lazy var dataWindow = DataWindow<MyData>(ids: Array(0...10000), windowSize: 50, dataFetcher: { (ids) in
-        Thread.sleep(forTimeInterval: 1) // Simulate Heavy Work
+    @IBOutlet private weak var jumpButton: UIButton!
+    var index = 0
+    @IBAction private func jumpButtonTapped(_ sender: UIButton) {
+        tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .top, animated: false)
+        index = (0..<ids.count).randomElement()!
+        jumpButton.setTitle("Jump to \(index)", for: .normal)
+    }
+    
+    private let ids = Array(0...10000)
+    
+    private lazy var dataWindow = DataWindow<MyData>(ids: ids, windowSize: 50, dataFetcher: { (ids) in
+        Thread.sleep(forTimeInterval: TimeInterval((2...10).randomElement()!) / 10) // Simulate Heavy Work
         return ids.map({ MyData(id: $0, string: "\($0) \(randomText(length: Int.random(in: 100...1000)))") })
     }, errorHandler: { error in
         print(error)
+    }, onElementsReadyHandler: {
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     })
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        jumpButtonTapped(jumpButton)
+    }
         
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
