@@ -16,13 +16,32 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W6g-u5-MJt">
-                                <rect key="frame" x="164.5" y="0.0" width="46" height="30"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="jumpButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ev1-6C-Umo"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="CRg-s0-hdH">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="30"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WWw-48-Yys">
+                                        <rect key="frame" x="0.0" y="0.0" width="125" height="30"/>
+                                        <state key="normal" title="Button"/>
+                                        <connections>
+                                            <action selector="nextButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="YCw-um-flW"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W6g-u5-MJt">
+                                        <rect key="frame" x="125" y="0.0" width="125" height="30"/>
+                                        <state key="normal" title="Button"/>
+                                        <connections>
+                                            <action selector="jumpButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ev1-6C-Umo"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fvc-Ym-VJn">
+                                        <rect key="frame" x="250" y="0.0" width="125" height="30"/>
+                                        <state key="normal" title="Button"/>
+                                        <connections>
+                                            <action selector="prevButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ULx-ww-RyP"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="qox-Qr-jxO">
                                 <rect key="frame" x="0.0" y="30" width="375" height="637"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -62,17 +81,20 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="W6g-u5-MJt" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="0dt-rX-3ww"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="qox-Qr-jxO" secondAttribute="bottom" id="6ll-Zx-oSr"/>
+                            <constraint firstItem="CRg-s0-hdH" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="783-eh-KFX"/>
+                            <constraint firstItem="CRg-s0-hdH" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="EWf-2P-yRn"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="qox-Qr-jxO" secondAttribute="trailing" id="PNj-6d-S9j"/>
-                            <constraint firstItem="qox-Qr-jxO" firstAttribute="top" secondItem="W6g-u5-MJt" secondAttribute="bottom" id="Qhj-Ys-7ui"/>
                             <constraint firstItem="qox-Qr-jxO" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="ZWY-7D-WaS"/>
-                            <constraint firstItem="W6g-u5-MJt" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="ar2-Vt-Dro"/>
+                            <constraint firstItem="CRg-s0-hdH" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" id="oML-7E-HHG"/>
+                            <constraint firstItem="qox-Qr-jxO" firstAttribute="top" secondItem="CRg-s0-hdH" secondAttribute="bottom" id="r6D-0p-7ch"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
                         <outlet property="jumpButton" destination="W6g-u5-MJt" id="Y9Y-gN-TOc"/>
+                        <outlet property="nextButton" destination="WWw-48-Yys" id="hE5-sx-yya"/>
+                        <outlet property="prevButton" destination="fvc-Ym-VJn" id="U1w-ya-00A"/>
                         <outlet property="tableView" destination="qox-Qr-jxO" id="QWw-s0-bX2"/>
                     </connections>
                 </viewController>

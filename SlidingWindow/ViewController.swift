@@ -20,12 +20,35 @@ struct MyData: ElementType {
 class ViewController: UIViewController {
     @IBOutlet private weak var tableView: UITableView!
     
+    @IBOutlet private weak var nextButton: UIButton!
+    @IBOutlet private weak var prevButton: UIButton!
+    
     @IBOutlet private weak var jumpButton: UIButton!
-    var index = 0
+    var jumpIndex = 0
+    private let step = 10
+    var currentIndex = 0 {
+        didSet {
+            nextButton.setTitle("Forward to \(currentIndex + step)", for: .normal)
+            prevButton.setTitle("Backward to \(currentIndex - step)", for: .normal)
+        }
+    }
+    
     @IBAction private func jumpButtonTapped(_ sender: UIButton) {
-        tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .top, animated: false)
-        index = (0..<ids.count).randomElement()!
-        jumpButton.setTitle("Jump to \(index)", for: .normal)
+        tableView.scrollToRow(at: IndexPath(row: jumpIndex, section: 0), at: .top, animated: false)
+        currentIndex = jumpIndex
+        jumpIndex = (0..<ids.count).randomElement()!
+        jumpButton.setTitle("Jump to \(jumpIndex)", for: .normal)
+    }
+        
+    @IBAction private func nextButtonTapped(_ sender: UIButton) {
+        guard currentIndex + step < ids.count else { return }
+        tableView.scrollToRow(at: IndexPath(row: currentIndex + step, section: 0), at: .top, animated: true)
+        currentIndex += step
+    }
+    @IBAction private func prevButtonTapped(_ sender: UIButton) {
+        guard currentIndex - step >= 0 else { return }
+        tableView.scrollToRow(at: IndexPath(row: currentIndex - step, section: 0), at: .top, animated: true)
+        currentIndex -= step
     }
     
     private let ids = Array(0...10000)
